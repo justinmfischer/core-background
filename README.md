@@ -1,16 +1,16 @@
-CoreBackground is a set of Objective-C classes inspired by the [iOS Yahoo Weather](https://itunes.apple.com/us/app/yahoo!-weather/id628677149?mt=8) App.
+CoreBackground is a set of Objective-C classes inspired by the [iOS Yahoo Weather](https://itunes.apple.com/us/app/yahoo!-weather/id628677149?mt=8) App. It provides iOS location-based [Flickr](http://www.flickr.com/services/developer/) backgrounds with Gaussian blur light effects for iPhone.
 
-This lightweight framework makes it easy to add gorgeous location-based public photos from [Flickr](http://www.flickr.com/services/developer/) to any iOS iPhone App. Additionally as one scrolls over the foreground content the background image is applied a Gaussian blur light effect. This provides for an engaging location-based UX while at the same time providing a canvas to apply readable content to the foreground. Furthermore CoreBackground is a non-blocking event based Objective-C block API and All rendering occurs in backing stores to preserve the main run loop. Make it be the foundation of your next project today.
+As one scrolls over the foreground a Gaussian blur light effect is applied to the background content. This provides for an engaging location-based UX while at the same time providing a canvas to apply readable content to the foreground. CoreBackground is a non-blocking "event-based" Objective-C block API and all rendering occurs in backing stores to preserve the main run loop. Make it be the foundation of your next project today.
 
 &copy; Copyrights
 
 Since CoreBackground uses public licenses to retrieve content from Flickr we display the owner’s copyright information along with a link to encourage discoverability.
 
 ## Example
-![Example](http://funtouchapps.com/Photos/CBG.gif)
+![Example](http://funtouchapps.com/github/core-background-animation.gif)
 
 ```Objective-C
-Note : Quality shown above is low due to animated gif dithering.
+Note : Quality shown above is low due to animated gif dithering. 4.1MB
 ```
 
 ## Getting Started
