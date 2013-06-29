@@ -51,27 +51,33 @@ ViewController.m
 - (void) viewDidLoad {
     
     [super viewDidLoad];
-    
+        
+    if([CBGUtil is4InchIphone]) {
+        self.scrollView.contentSize = CGSizeMake(320, 720);
+    } else {
+        self.scrollView.contentSize = CGSizeMake(320, 580);
+    }
+        
     [[CBGStockPhotoManager sharedManager] randomStockPhoto:^(CBGPhotos * photos) {
         [self crossDissolvePhotos:photos withTitle:@""];
     }];
     
     [self retrieveLocationAndUpdateBackgroundPhoto];
     
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:kTimerIntervalInSeconds target:self selector:@selector(retrieveLocationAndUpdateBackgroundPhoto) userInfo:nil repeats:YES];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:kTimerIntervalInSeconds target:self selector:@selector(retrieveLocationAndUpdateBackgroundPhoto)userInfo:nil repeats:YES];
 }
 
 - (void) retrieveLocationAndUpdateBackgroundPhoto {
-    [[LocationManager sharedManager] locationRequest:^(CLLocation * location, NSError * error) {
-                
+    [[CBGLocationManager sharedManager] locationRequest:^(CLLocation * location, NSError * error) {
+        
         [self.activityIndicator startAnimating];
         
-        if(!error) {        
-            [[FlickrManager sharedManager] randomPhotoRequest:^(FlickrRequestInfo * flickrRequestInfo, NSError * error) {
-                                
+        if(!error) {
+            [[CBGFlickrManager sharedManager] randomPhotoRequest:^(FlickrRequestInfo * flickrRequestInfo, NSError * error) {
+                
                 if(!error) {
                     self.userPhotoWebPageURL = flickrRequestInfo.userPhotoWebPageURL;
-                
+                    
                     [self crossDissolvePhotos:flickrRequestInfo.photos withTitle:flickrRequestInfo.userInfo];
                     [self.activityIndicator stopAnimating];
                 } else {
@@ -85,7 +91,7 @@ ViewController.m
                     NSLog(@"Flickr: %@", error.description);
                 }
             }];
-        } else {            
+        } else {
             
             [[CBGStockPhotoManager sharedManager] randomStockPhoto:^(CBGPhotos * photos) {
                 [self crossDissolvePhotos:photos withTitle:@""];
@@ -103,13 +109,13 @@ ViewController.m
         
         self.backgroundPhoto.image = photos.photo;
         self.backgroundPhotoWithImageEffects.image = photos.photoWithEffects;
-        [self.photoUserInfoButton setTitle:title forState:UIControlStateNormal];
+        self.photoUserInfoBarButton.title = title;
         
     } completion:NULL];
 }
 
 - (IBAction) launchFlickrUserPhotoWebPage:(id) sender {
-    if([self.photoUserInfoButton.titleLabel.text  length] > 0) {
+    if([self.photoUserInfoBarButton.title  length] > 0) {
         [[UIApplication sharedApplication] openURL:self.userPhotoWebPageURL];
     }
 }
