@@ -1,6 +1,6 @@
 CoreBackground is a set of Objective-C classes inspired by the [iOS Yahoo Weather](https://itunes.apple.com/us/app/yahoo!-weather/id628677149?mt=8) App. It provides iOS location-based [Flickr](http://www.flickr.com/services/developer/) backgrounds with Gaussian blur light effects for iPhone.
 
-As one scrolls over the foreground a Gaussian blur light effect is applied to the background content. This provides for an engaging location-based UX while at the same time providing a canvas to apply readable content to the foreground. CoreBackground is a non-blocking "event-based" Objective-C block API and all rendering occurs in backing stores to preserve the main run loop. Make it be the foundation of your next project today.
+As one scrolls over the foreground a Gaussian blur light effect is applied to the background. This provides for an engaging location-based UX while at the same time providing a canvas to apply readable content to the foreground. CoreBackground is a non-blocking "event-based" Objective-C block API and all rendering occurs in backing stores to preserve the main run loop. Make it be the foundation of your next iOS project today.
 
 &copy; Copyrights
 
@@ -9,9 +9,7 @@ Since CoreBackground uses public licenses to retrieve content from Flickr we dis
 ## Example
 ![Example](http://funtouchapps.com/github/core-background-animation.gif)
 
-```Objective-C
-Note : Quality shown above is low due to animated gif dithering. 4.1MB
-```
+`Note : Quality shown above is low due to animated gif dithering. 4.1MB`
 
 ## Getting Started
 CoreBackground is comprised of 3 main Objective-C singleton managers all within the CBG header file `(CBG.h)`.
@@ -146,7 +144,7 @@ Location requests will timeout after 10 seconds and requests to Flickr after 15 
 #define kLocationQuitTimeoutDurationInSeconds 10
 
 //Flickr
-#define kFlickrSearchInvalidateCacheTimeoutDurationInSeconds 900 //15min Hour (60 * 15)
+#define kFlickrSearchInvalidateCacheTimeoutDurationInSeconds 900 //15min (60 * 15)
 #define kFlickrSearchQuitTimeoutDurationInSeconds 15
 ```
 
@@ -154,7 +152,7 @@ Location requests will timeout after 10 seconds and requests to Flickr after 15 
 _Although CoreBackground is thread-safe it is intended to be called from a timer which is scheduled on the main run loop._
 
 ### History
-Initial release : _6/27/2013_
+Initial release : _6/29/2013_
 
 ### Acknowledgements
 Special thanks to [Matt Martindale](https://github.com/showpony) of [Show Pony Apps, LLC](http://www.showponyapps.com) for providing architecture guidance.
