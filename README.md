@@ -9,7 +9,9 @@ Since CoreBackground uses public licenses to retrieve content from Flickr we dis
 ## Example
 ![Example](http://funtouchapps.com/github/core-background-animation.gif)
 
-`Note : Quality shown above is low due to animated gif dithering. 4.1MB`
+```HTML
+Note : Quality shown above is low due to animated gif dithering. 4.1MB
+```
 
 ## Getting Started
 CoreBackground is comprised of 3 main Objective-C singleton managers all within the CBG header file `(CBG.h)`.
