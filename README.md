@@ -162,8 +162,16 @@ Location requests will timeout after 10 seconds and requests to Flickr after 15 
 ```
 
 ## Stock Photos
-The CBGStockPhotoManager provides random local stock photos when there are reachability issues. The manager looks at local Xcode folder reference named 
-“StockPhotos” and iterates over any photos in the collection.
+The CBGStockPhotoManager provides random local stock photos when there are reachability issues. The manager looks at local Xcode folder reference named “StockPhotos” and iterates over any photos in the collection that conform to the following naming convention.
+
+```Objective-C
+{3 digit serial-number}-StockPhoto-320x568.png
+{3 digit serial-number}-StockPhoto-320x568@2x.png
+
+Example:
+000-StockPhoto-320x568.png
+000-StockPhoto-320x568@2x.png
+```
 
 ## Thread-Safety
 _CoreBackground is intended to be called from a timer which is scheduled on the main run loop. Although API block callbacks will be dispatched to the main queue there are no thread-safe guaranties._
