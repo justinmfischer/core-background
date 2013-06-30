@@ -173,6 +173,9 @@ The CBGStockPhotoManager provides random local stock photos when there are reach
 Example:
 000-StockPhoto-320x568.png
 000-StockPhoto-320x568@2x.png
+001-StockPhoto-320x568.png
+001-StockPhoto-320x568@2x.png
+...
 ```
 
 ## Thread-Safety
