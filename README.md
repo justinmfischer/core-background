@@ -164,7 +164,7 @@ Location requests will timeout after 10 seconds and requests to Flickr after 15 
 ## Stock Photos
 The CBGStockPhotoManager provides random local stock photos when there are reachability issues. The manager looks at local Xcode folder reference named “StockPhotos” and iterates over any photos in the collection that conform to the following naming convention.
 
-```Objective-C
+```HTML
 {3 digit serial-number}-StockPhoto-320x568.png
 {3 digit serial-number}-StockPhoto-320x568@2x.png
 
