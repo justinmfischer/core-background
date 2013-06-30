@@ -37,6 +37,13 @@ The constants file also contains a value to provide searchable Flickr photo tags
 #define KFlickrSsearchTags @"bike"
 ```
 
+## Required Linked Frameworks
+
+* **Accelerate.framework**
+* **CoreLocation.framework**
+* **CFNetwork.framework**
+* **SystemConfiguration.framework**
+
 ## Code : Sample Project 
 
 The CoreBackground sample project demonstrates how these Objective-C classes can be used to achieve location-based background content to drive discoverability and local engagement.
@@ -154,16 +161,20 @@ Location requests will timeout after 10 seconds and requests to Flickr after 15 
 #define kFlickrSearchQuitTimeoutDurationInSeconds 15
 ```
 
-## Thread-Safety
-_Although CoreBackground is thread-safe it is intended to be called from a timer which is scheduled on the main run loop._
+## Stock Photos
+The CBGStockPhotoManager provides random local stock photos when there are reachability issues. The manager looks at local Xcode folder reference named 
+“StockPhotos” and iterates over any photos in the collection.
 
-### History
+## Thread-Safety
+_CoreBackground is intended to be called from a timer which is scheduled on the main run loop. Although API block callbacks will be dispatched to the main queue there are no thread-safe guaranties._
+
+## History
 Initial release : _6/29/2013_
 
-### Acknowledgements
+## Acknowledgements
 Special thanks to [Matt Martindale](https://github.com/showpony) of [Show Pony Apps, LLC](http://www.showponyapps.com) for providing architecture guidance.
 
-### Copyright and Software License
+## Copyright and Software License
 
 * ObjectiveFlickr : _Lukhnos D. Liu._
 * LFWebAPIKit : _Lukhnos D. Liu and Lithoglyph Inc._
@@ -179,9 +190,9 @@ The above copyright notice and this permission notice shall be included in all
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-### Contact
+## Contact
 * Justin M Fischer : _justinmfischer@gmail.com_
 
-### Links
+## Links
 * [iOS Yahoo Weather App](https://itunes.apple.com/us/app/yahoo!-weather/id628677149?mt=8)
 * [Flickr API key, secret](http://www.flickr.com/services/apps/create/apply/)
