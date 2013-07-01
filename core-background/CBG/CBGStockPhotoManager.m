@@ -62,7 +62,7 @@ static CBGStockPhotoManager *sharedManager = nil;
         int stockPhotoCount = ([self.stockPhotoSet count] - 1);
         int randomIndex = [CBGUtil getRandomIntBetweenLow:0 andHigh:stockPhotoCount];
     
-        NSString *imagePath = [NSString stringWithFormat:@"%@/%03d-StockPhoto-640x1136.png", @"StockPhotos", randomIndex];
+        NSString *imagePath = [NSString stringWithFormat:@"%@/%03d-StockPhoto-320x568.png", @"StockPhotos", randomIndex];
     
         photos.photo = [UIImage imageNamed:imagePath];
         photos.photoWithEffects = [photos.photo applyLightEffect];
