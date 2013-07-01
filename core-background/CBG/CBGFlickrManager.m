@@ -8,7 +8,6 @@
 
 #import "CBGFlickrManager.h"
 #import "CBGLocationManager.h"
-#import "CBGConstants.h"
 #import "CBGUtil.h"
 #import "CBGConstants.h"
 
