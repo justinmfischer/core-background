@@ -24,9 +24,6 @@
  </licenses>
  */
 
-//Timer
-#define kTimerIntervalInSeconds 10
-
 //Location
 #define kLocationInvalidateCacheTimeoutDurationInSeconds 1800 //30min (60 * 30)
 #define kLocationQuitTimeoutDurationInSeconds 10

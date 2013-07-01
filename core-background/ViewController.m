@@ -9,6 +9,9 @@
 #import "ViewController.h"
 #import "CBG.h"
 
+//Timer
+#define kTimerIntervalInSeconds 10
+
 @interface ViewController ()
 
 @end
