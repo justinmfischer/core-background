@@ -60,28 +60,36 @@ ViewController.m
 - (void) viewDidLoad {
     
     [super viewDidLoad];
-        
+
+    //ScrollView content size
     if([CBGUtil is4InchIphone]) {
         self.scrollView.contentSize = CGSizeMake(320, 720);
     } else {
         self.scrollView.contentSize = CGSizeMake(320, 580);
     }
-        
+    
+    //Initial stock photos from bundle
     [[CBGStockPhotoManager sharedManager] randomStockPhoto:^(CBGPhotos * photos) {
         [self crossDissolvePhotos:photos withTitle:@""];
     }];
     
+    //Retrieve location and content from Flickr
     [self retrieveLocationAndUpdateBackgroundPhoto];
     
+    //Schedule updates
     self.timer = [NSTimer scheduledTimerWithTimeInterval:kTimerIntervalInSeconds target:self selector:@selector(retrieveLocationAndUpdateBackgroundPhoto)userInfo:nil repeats:YES];
 }
 
 - (void) retrieveLocationAndUpdateBackgroundPhoto {
+    
+    //Location
     [[CBGLocationManager sharedManager] locationRequest:^(CLLocation * location, NSError * error) {
         
         [self.activityIndicator startAnimating];
         
         if(!error) {
+            
+            //Flickr 
             [[CBGFlickrManager sharedManager] randomPhotoRequest:^(FlickrRequestInfo * flickrRequestInfo, NSError * error) {
                 
                 if(!error) {
@@ -91,6 +99,7 @@ ViewController.m
                     [self.activityIndicator stopAnimating];
                 } else {
                     
+                    //Error : Stock photos
                     [[CBGStockPhotoManager sharedManager] randomStockPhoto:^(CBGPhotos * photos) {
                         [self crossDissolvePhotos:photos withTitle:@""];
                     }];
@@ -102,6 +111,7 @@ ViewController.m
             }];
         } else {
             
+            //Error : Stock photos
             [[CBGStockPhotoManager sharedManager] randomStockPhoto:^(CBGPhotos * photos) {
                 [self crossDissolvePhotos:photos withTitle:@""];
             }];
