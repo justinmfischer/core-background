@@ -50,7 +50,7 @@ The constants file also contains a value to provide searchable Flickr photo tags
 
 The CoreBackground sample project demonstrates how these Objective-C classes can be used to achieve location-based background content to drive discoverability and local engagement.
 
-While one could subclass UIViewController to provide high orders of abstraction CoreBackground was specifically designed to be loosely coupled and not bound to a particular view hierarchy. This design pattern encourages community modifications and higher adoption rates.
+While one could subclass UIViewController to provide higher orders of abstraction CoreBackground was specifically designed to be loosely coupled and not bound to a particular view hierarchy. This design pattern encourages community modifications and higher adoption rates.
 
 ```Objective-C
 ViewController.m
