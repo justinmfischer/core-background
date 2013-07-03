@@ -79,7 +79,7 @@
             
             [self.activityIndicator stopAnimating];
             
-            NSLog(@"LocationManager: %@", error.description);
+            NSLog(@"Location: %@", error.description);
         }
     }];
 }
