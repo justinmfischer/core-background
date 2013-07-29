@@ -5,7 +5,7 @@
 
 //Objective Flickr API
 
-#error Change Flickr API & SECRET
+#warning Change Flickr API & SECRET
 
 #define OBJECTIVE_FLICKR_API_KEY @"Ch@ngeMe"
 #define OBJECTIVE_FLICKR_API_SHARED_SECRET @"Ch@ngeMe"
