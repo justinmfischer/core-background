@@ -196,7 +196,7 @@ _CoreBackground is intended to be called from a timer which is scheduled on the 
 Initial release : _6/29/2013_
 
 ## Acknowledgements
-Special thanks to [Matt Martindale](https://github.com/showpony) of [Show Pony Apps, LLC](http://www.showponyapps.com) for providing architecture guidance.
+Special thanks to [Matt Martindale](https://github.com/showpony) of [Show Pony Apps, LLC](http://www.showponyapps.com) for providing architectural guidance.
 
 ## Copyright and Software License
 
