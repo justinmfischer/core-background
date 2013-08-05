@@ -17,9 +17,9 @@ Since CoreBackground uses public licenses to retrieve content from Flickr we dis
 ## Getting Started
 CoreBackground is comprised of 3 main Objective-C singleton managers all within the CBG header file `(CBG.h)`.
 
-* **CGBLocationManager** : _Provides cacheable location-based information._
-* **CGBFlickrManager** : _Provides cacheable Flickr API content._
-* **CGBStockPhotoManager** : _Provides local image content in case of reachability issues._
+* **CBGLocationManager** : _Provides cacheable location-based information._
+* **CBGFlickrManager** : _Provides cacheable Flickr API content._
+* **CBGStockPhotoManager** : _Provides local image content in case of reachability issues._
 
 Prior to using CoreBackground a valid Flickr API key and shared secret is required. The sample project will successfully build (LLVM - Warning) without this information but will fall back to stock photos. The Flickr API key and shared secret can be obtained [here](http://www.flickr.com/services/apps/create/apply/). As of this writing Flickr restricts free (Non-Commercial) accounts to 3600 request per hour. Please make the following modifications below.
 
