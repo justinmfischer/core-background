@@ -140,7 +140,7 @@ ViewController.m
     }
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void) scrollViewDidScroll:(UIScrollView *) scrollView {
     if(scrollView.contentOffset.y >= 0 && scrollView.contentOffset.y <= 80.0) {
         float percent = (scrollView.contentOffset.y / 80.0);
         
