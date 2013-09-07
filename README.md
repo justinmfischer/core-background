@@ -1,7 +1,7 @@
 ![Example](http://funtouchapps.com/github/core-background-animation.gif)
 
 ```HTML
-Note : Quality shown above is low due to animated gif dithering. (4.1MB)
+Sample project animated .gif (4.1MB)
 ```
 
 ##Overview
