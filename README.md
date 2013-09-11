@@ -1,7 +1,7 @@
 ![Example](http://funtouchapps.com/github/core-background-animation.gif)
 
 ```HTML
-Sample project animated .gif (4.1MB)
+Sample project .gif (4.1MB)
 ```
 
 ##Overview
