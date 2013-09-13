@@ -220,3 +220,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMP
 ## Links
 * [iOS Yahoo Weather App](https://itunes.apple.com/us/app/yahoo!-weather/id628677149?mt=8)
 * [Flickr API key, secret](http://www.flickr.com/services/apps/create/apply/)
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/9283d26b76545894bab0acb25acbdc6d "githalytics.com")](http://githalytics.com/justinmfischer/core-background)
