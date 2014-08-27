@@ -1,7 +1,7 @@
 //
 // ObjectiveFlickr.m
 //
-// Copyright (c) 2009 Lukhnos D. Liu (http://lukhnos.org)
+// Copyright (c) 2006-2014 Lukhnos D. Liu (http://lukhnos.org)
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -30,13 +30,13 @@
 #import "OFXMLMapper.h"
 
 NSString *const OFFlickrSmallSquareSize = @"s";
+NSString *const OFFlickrLargeSquareSize = @"q";
 NSString *const OFFlickrThumbnailSize = @"t";
 NSString *const OFFlickrSmallSize = @"m";
+NSString *const OFFlickrSmallSize320 = @"n";
 NSString *const OFFlickrMediumSize = nil;
-
-NSString *const OFFlickrMedium640Size = @"z";
-NSString *const OFFlickrMedium800Size = @"c";
-
+NSString *const OFFlickrMediumSquareSize640 = @"z";
+NSString *const OFFlickrMediumSquareSize800 = @"c";
 NSString *const OFFlickrLargeSize = @"b";
 
 NSString *const OFFlickrReadPermission = @"read";
@@ -53,22 +53,25 @@ NSString *const OFFetchOAuthAccessTokenSession = @"FetchOAuthAccessToken";
 
 static NSString *const kEscapeChars = @"`~!@#$^&*()=+[]\\{}|;':\",/<>?";
 
+static NSString *const kDefaultFlickrRESTAPIEndpoint = @"https://api.flickr.com/services/rest/";
+static NSString *const kDefaultFlickrPhotoSource = @"https://staticflickr.com/";
+static NSString *const kDefaultFlickrPhotoWebPageSource = @"https://www.flickr.com/photos/";
+static NSString *const kDefaultFlickrAuthEndpoint = @"https://www.flickr.com/services/oauth/";
+static NSString *const kDefaultFlickrUploadEndpoint = @"https://up.flickr.com/services/upload/";
 
-// compatibility typedefs
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4
-typedef unsigned int NSUInteger;
-#endif
+static void AssertIsValidURLString(NSString *urlString)
+{
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSCAssert(url, @"Must be a valid URL, but was given: %@", urlString);
+    (void) url;
+}
+
 
 @interface OFFlickrAPIContext (PrivateMethods)
 - (NSArray *)signedArgumentComponentsFromArguments:(NSDictionary *)inArguments useURIEscape:(BOOL)inUseEscape;
 - (NSString *)signedQueryFromArguments:(NSDictionary *)inArguments;
 @end
 
-#define kDefaultFlickrRESTAPIEndpoint		@"http://api.flickr.com/services/rest/"
-#define kDefaultFlickrPhotoSource			@"http://static.flickr.com/"
-#define kDefaultFlickrPhotoWebPageSource	@"http://www.flickr.com/photos/"
-#define kDefaultFlickrAuthEndpoint			@"http://flickr.com/services/auth/"
-#define kDefaultFlickrUploadEndpoint		@"http://api.flickr.com/services/upload/"
 
 @implementation OFFlickrAPIContext
 - (void)dealloc
@@ -124,40 +127,50 @@ typedef unsigned int NSUInteger;
         perms = [NSString stringWithFormat:@"&perms=%@", inPermission];
     }
     
-    NSString *URLString = [NSString stringWithFormat:@"http://www.flickr.com/services/oauth/authorize?oauth_token=%@%@", inRequestToken, perms];
+    NSString *URLString = [NSString stringWithFormat:@"https://www.flickr.com/services/oauth/authorize?oauth_token=%@%@", inRequestToken, perms];
     return [NSURL URLWithString:URLString];
 }
 
 - (NSURL *)photoSourceURLFromDictionary:(NSDictionary *)inDictionary size:(NSString *)inSizeModifier
 {
-	// http://farm{farm-id}.static.flickr.com/{server-id}/{id}_{secret}_[mstb].jpg
-	// http://farm{farm-id}.static.flickr.com/{server-id}/{id}_{secret}.jpg
-	
-	NSString *farm = [inDictionary objectForKey:@"farm"];
+    // From https://www.flickr.com/services/api/misc.urls.html, the URL is one of the following:
+    // * http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}.jpg
+    // * http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
+    // * http://farm{farm-id}.staticflickr.com/{server-id}/{id}_{o-secret}_o.(jpg|gif|png)
+
+
 	NSString *photoID = [inDictionary objectForKey:@"id"];
+    NSAssert([photoID length], nil);
+
 	NSString *secret = [inDictionary objectForKey:@"secret"];
+    NSAssert([secret length], nil);
+
 	NSString *server = [inDictionary objectForKey:@"server"];
-	
-	NSMutableString *URLString = [NSMutableString stringWithString:@"http://"];
-	if ([farm length]) {
-		[URLString appendFormat:@"farm%@.", farm];
+	NSAssert([server length], nil);
+
+    NSString *farmID = [inDictionary objectForKey:@"farm"];
+
+    NSURL *basePhotoSourceURL = [NSURL URLWithString:photoSource];
+    NSString *scheme = [basePhotoSourceURL scheme];
+    NSString *host = [basePhotoSourceURL host];
+
+	if ([farmID length]) {
+        host = [NSString stringWithFormat:@"farm%@.%@", farmID, host];
 	}
-	
-	// skips "http://"
-	NSAssert([server length], @"Must have server attribute");
-	NSAssert([photoID length], @"Must have id attribute");
-	NSAssert([secret length], @"Must have secret attribute");
-	[URLString appendString:[photoSource substringFromIndex:7]];
-	[URLString appendFormat:@"%@/%@_%@", server, photoID, secret];
-	
-	if ([inSizeModifier length]) {
-		[URLString appendFormat:@"_%@.jpg", inSizeModifier];
-	}
-	else {
-		[URLString appendString:@".jpg"];
-	}
-	
-	return [NSURL URLWithString:URLString];
+
+    NSString *sizeSuffix = @"";
+    if ([inSizeModifier length]) {
+        sizeSuffix = [NSString stringWithFormat:@"_%@", inSizeModifier];
+    }
+
+    // TODO: Add originalsecret and originalformat support
+    NSString *formatExt = @"jpg";
+
+    // Combine the path
+    NSString *path = [NSString stringWithFormat:@"/%@/%@_%@%@.%@", server, photoID, secret, sizeSuffix, formatExt];
+
+    NSURL *staticURL = [[[NSURL alloc] initWithScheme:scheme host:host path:path] autorelease];
+	return staticURL;
 }
 
 - (NSURL *)photoWebPageURLFromDictionary:(NSDictionary *)inDictionary
@@ -187,10 +200,7 @@ typedef unsigned int NSUInteger;
 
 - (void)setPhotoSource:(NSString *)inSource
 {
-	if (![inSource hasPrefix:@"http://"]) {
-		return;
-	}
-	
+    AssertIsValidURLString(inSource);
 	NSString *tmp = photoSource;
 	photoSource = [inSource copy];
 	[tmp release];
@@ -203,10 +213,7 @@ typedef unsigned int NSUInteger;
 
 - (void)setPhotoWebPageSource:(NSString *)inSource
 {
-	if (![inSource hasPrefix:@"http://"]) {
-		return;
-	}
-	
+    AssertIsValidURLString(inSource);
 	NSString *tmp = photoWebPageSource;
 	photoWebPageSource = [inSource copy];
 	[tmp release];
@@ -265,10 +272,8 @@ typedef unsigned int NSUInteger;
     return oauthTokenSecret;
 }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_4
 @synthesize key;
 @synthesize sharedSecret;
-#endif
 @end
 
 @implementation OFFlickrAPIContext (PrivateMethods)
@@ -290,7 +295,7 @@ typedef unsigned int NSUInteger;
 	NSEnumerator *argEnumerator = [sortedArgs objectEnumerator];
 	NSString *nextKey;
 	while ((nextKey = [argEnumerator nextObject])) {
-		NSString *value = [newArgs objectForKey:nextKey];
+		NSString *value = [[newArgs objectForKey:nextKey] description];
 		[sigString appendFormat:@"%@%@", nextKey, value];
 		[argArray addObject:[NSArray arrayWithObjects:nextKey, (inUseEscape ? OFEscapedURLStringFromNSString(value) : value), nil]];
 	}
@@ -347,7 +352,7 @@ typedef unsigned int NSUInteger;
     NSEnumerator *kenum = [sortedArgKeys objectEnumerator];
     NSString *k;
     while ((k = [kenum nextObject]) != nil) {
-        [baseStrArgs addObject:[NSString stringWithFormat:@"%@=%@", k, OFEscapedURLStringFromNSStringWithExtraEscapedChars([newArgs objectForKey:k], kEscapeChars)]];
+        [baseStrArgs addObject:[NSString stringWithFormat:@"%@=%@", k, OFEscapedURLStringFromNSStringWithExtraEscapedChars([[newArgs objectForKey:k] description], kEscapeChars)]];
     }
     
     [baseString appendString:OFEscapedURLStringFromNSStringWithExtraEscapedChars([baseStrArgs componentsJoinedByString:@"&"], kEscapeChars)];
@@ -366,7 +371,7 @@ typedef unsigned int NSUInteger;
     NSEnumerator *kenum = [newArgs keyEnumerator];
     NSString *k;
     while ((k = [kenum nextObject]) != nil) {
-        [queryArray addObject:[NSString stringWithFormat:@"%@=%@", k, OFEscapedURLStringFromNSStringWithExtraEscapedChars([newArgs objectForKey:k], kEscapeChars)]];
+        [queryArray addObject:[NSString stringWithFormat:@"%@=%@", k, OFEscapedURLStringFromNSStringWithExtraEscapedChars([[newArgs objectForKey:k] description], kEscapeChars)]];
     }
     
     
@@ -385,6 +390,7 @@ typedef unsigned int NSUInteger;
 {
     [context release];
     HTTPRequest.delegate = nil;
+    [HTTPRequest cancelWithoutDelegateMessage];
     [HTTPRequest release];
     [sessionInfo release];
     
@@ -460,7 +466,7 @@ typedef unsigned int NSUInteger;
     }
 
     NSDictionary *paramsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[inCallbackURL absoluteString], @"oauth_callback", nil];
-    NSURL *requestURL = [context oauthURLFromBaseURL:[NSURL URLWithString:@"http://www.flickr.com/services/oauth/request_token"] method:LFHTTPRequestGETMethod arguments:paramsDictionary];
+    NSURL *requestURL = [context oauthURLFromBaseURL:[NSURL URLWithString:@"https://www.flickr.com/services/oauth/request_token"] method:LFHTTPRequestGETMethod arguments:paramsDictionary];
     [HTTPRequest setSessionInfo:OFFetchOAuthRequestTokenSession];
     [HTTPRequest setContentType:nil];
     return [HTTPRequest performMethod:LFHTTPRequestGETMethod onURL:requestURL withData:nil];
@@ -472,7 +478,7 @@ typedef unsigned int NSUInteger;
         return NO;
     }
     NSDictionary *paramsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:inRequestToken, @"oauth_token", inVerifier, @"oauth_verifier", nil];
-    NSURL *requestURL = [context oauthURLFromBaseURL:[NSURL URLWithString:@"http://www.flickr.com/services/oauth/access_token"] method:LFHTTPRequestGETMethod arguments:paramsDictionary];
+    NSURL *requestURL = [context oauthURLFromBaseURL:[NSURL URLWithString:@"https://www.flickr.com/services/oauth/access_token"] method:LFHTTPRequestGETMethod arguments:paramsDictionary];
     [HTTPRequest setSessionInfo:OFFetchOAuthAccessTokenSession];
     [HTTPRequest setContentType:nil];
     return [HTTPRequest performMethod:LFHTTPRequestGETMethod onURL:requestURL withData:nil];
@@ -515,11 +521,11 @@ static NSData *NSDataFromOAuthPreferredWebForm(NSDictionary *formDictionary)
         id value = [formDictionary objectForKey:key];
         [combinedDataString appendString:[NSString stringWithFormat:@"%@=%@", 
                                           [(NSString*)key stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
-                                          OFEscapedURLStringFromNSStringWithExtraEscapedChars(value, kEscapeChars)]];
+                                          OFEscapedURLStringFromNSStringWithExtraEscapedChars([value description], kEscapeChars)]];
         
 		while ((key = [enumerator nextObject])) {
 			value = [formDictionary objectForKey:key];
-			[combinedDataString appendString:[NSString stringWithFormat:@"&%@=%@", [(NSString*)key stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], OFEscapedURLStringFromNSStringWithExtraEscapedChars(value, kEscapeChars)]];
+			[combinedDataString appendString:[NSString stringWithFormat:@"&%@=%@", [(NSString*)key stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding], OFEscapedURLStringFromNSStringWithExtraEscapedChars([value description], kEscapeChars)]];
 		}
 	}
     
@@ -648,28 +654,11 @@ static NSData *NSDataFromOAuthPreferredWebForm(NSDictionary *formDictionary)
     NSAssert(actualWrittenLength == writeLength, @"Must write multipartBegin");
     [outputStream close];
     
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4                
-    NSDictionary *fileInfo = [[NSFileManager defaultManager] fileAttributesAtPath:uploadTempFilename traverseLink:YES];
-    NSAssert(fileInfo, @"Must have upload temp file");
-#else
     NSError *error = nil;
     NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:uploadTempFilename error:&error];
     NSAssert(fileInfo && !error, @"Must have upload temp file");
-#endif
     NSNumber *fileSizeNumber = [fileInfo objectForKey:NSFileSize];
-    NSUInteger fileSize = 0;
-
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4                
-    fileSize = [fileSizeNumber intValue];
-#else
-    if ([fileSizeNumber respondsToSelector:@selector(integerValue)]) {
-        fileSize = [fileSizeNumber integerValue];                    
-    }
-    else {
-        fileSize = [fileSizeNumber intValue];                    
-    }                
-#endif
-    
+    NSUInteger fileSize = [fileSizeNumber integerValue];
     NSInputStream *inputStream = [NSInputStream inputStreamWithFileAtPath:uploadTempFilename];
 	
     [HTTPRequest setContentType:contentType];
@@ -789,13 +778,8 @@ static NSData *NSDataFromOAuthPreferredWebForm(NSDictionary *formDictionary)
         NSFileManager *fileManager = [NSFileManager defaultManager];
         if ([fileManager fileExistsAtPath:uploadTempFilename]) {
 			BOOL __unused removeResult = NO;
-#if MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4                
-			removeResult = [fileManager removeFileAtPath:uploadTempFilename handler:nil];
-#else
 			NSError *error = nil;
 			removeResult = [fileManager removeItemAtPath:uploadTempFilename error:&error];
-#endif
-			
 			NSAssert(removeResult, @"Should be able to remove temp file");
         }
         
